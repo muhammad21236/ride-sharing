@@ -43,7 +43,7 @@ docker_build_with_restart(
 k8s_yaml('./infra/development/k8s/api-gateway-deployment.yaml')
 k8s_resource(
     'api-gateway',
-    port_forwards=8088,
+    port_forwards='8088:8088',
     resource_deps=['api-gateway-compile'],
     labels=['services'],
 )

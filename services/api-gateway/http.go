@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json"
-	"net/http"
 	"bytes"
+	"encoding/json"
 	"log"
+	"net/http"
 	"ride-sharing/shared/contracts"
 )
 
@@ -24,7 +24,6 @@ func HandleTripPreview(w http.ResponseWriter, r *http.Request) {
 	jsonBody, _ := json.Marshal(reqBody)
 	reader := bytes.NewReader(jsonBody)
 
-
 	resp, err := http.Post("http://trip-service:8083/preview", "application/json", reader)
 	if err != nil {
 		log.Print(err)
@@ -40,7 +39,6 @@ func HandleTripPreview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := contracts.APIResponse{Data: respBody}
-
 
 	writeJSON(w, http.StatusCreated, response)
 }
