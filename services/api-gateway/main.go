@@ -22,6 +22,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /trip/preview", enableCORS(HandleTripPreview))
+	mux.HandleFunc("POST /trip/start", enableCORS(handleTripStart))
 	mux.HandleFunc("/ws/drivers", handleDriversWebSocket)
 	mux.HandleFunc("/ws/riders", handleRidersWebSocket)
 
@@ -52,6 +53,4 @@ func main() {
 			server.Close()
 		}
 	}
-
-	log.Println("Server gracefully stopped")
 }

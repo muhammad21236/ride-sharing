@@ -50,6 +50,5 @@ func main() {
 	<-ctx.Done()
 	log.Println("Shutting down server...")
 	grpcServer.GracefulStop()
-	log.Println("gRPC server stopped")
 
 }
