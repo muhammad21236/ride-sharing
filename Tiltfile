@@ -12,8 +12,8 @@ def is_windows():
 k8s_yaml('./infra/development/k8s/app-config.yaml')
 
 ### End of K8s Config ###
-### API Gateway ###
 
+### API Gateway ###
 gateway_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/api-gateway ./services/api-gateway'
 if is_windows():
     gateway_compile_cmd = 'cmd /c infra\\development\\docker\\api-gateway-build.bat'
@@ -47,10 +47,9 @@ k8s_resource(
     resource_deps=['api-gateway-compile'],
     labels=['services'],
 )
-
 ### End of API Gateway ###
-### Trip Service ###
 
+### Trip Service ###
 trip_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/trip-service ./services/trip-service/cmd/main.go'
 if is_windows():
     trip_compile_cmd = 'cmd /c infra\\development\\docker\\trip-build.bat'
@@ -83,10 +82,44 @@ k8s_resource(
     resource_deps=['trip-service-compile'],
     labels=['services'],
 )
-
 ### End of Trip Service ###
-### Web Frontend ###
 
+### Driver Service ###
+driver_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/driver-service ./services/driver-service/main.go'
+if is_windows():
+    driver_compile_cmd = 'cmd /c infra\\development\\docker\\driver-build.bat'
+
+local_resource(
+    'driver-service-compile',
+    driver_compile_cmd,
+    deps=['./services/driver-service', './shared'],
+    labels=['compiles'],
+)
+
+docker_build_with_restart(
+    'ride-sharing/driver-service',
+    '.',
+    entrypoint=['/app/build/driver-service'],
+    dockerfile='./infra/development/docker/driver-service.Dockerfile',
+    only=[
+        './build/driver-service',
+        './shared',
+    ],
+    live_update=[
+        sync('./build', '/app/build'),
+        sync('./shared', '/app/shared'),
+    ],
+)
+
+k8s_yaml('./infra/development/k8s/driver-service-deployment.yaml')
+k8s_resource(
+    'driver-service',
+    resource_deps=['driver-service-compile'],
+    labels=['services'],
+)
+### End of Driver Service ###
+
+### Web Frontend ###
 docker_build(
     'ride-sharing/web',
     '.',
@@ -99,5 +132,4 @@ k8s_resource(
     port_forwards=3000,
     labels=['frontend'],
 )
-
 ### End of Web Frontend ###
