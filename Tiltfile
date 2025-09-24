@@ -85,7 +85,7 @@ k8s_resource(
 ### End of Trip Service ###
 
 ### Driver Service ###
-driver_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/driver-service ./services/driver-service/main.go'
+driver_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/driver-service ./services/driver-service'
 if is_windows():
     driver_compile_cmd = 'cmd /c infra\\development\\docker\\driver-build.bat'
 
